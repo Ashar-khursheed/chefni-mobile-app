@@ -1,0 +1,209 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Chefni AI RESTful API Documentation",
+    "description": "Official OpenAPI 3.0 specification for Chefni AI platform (Flutter App & Web Admin Dashboard). Features Sanctum Authentication, 14-Day Free Trial Engine, High-Precision 1-Min Reel Trimming & Watermark Engine, Dynamic Geo-Pricing Matrix, and Legal Publishing Suite.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Chefni Technical Support",
+      "email": "support@chefni.com",
+      "url": "https://www.chefni.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000/api",
+      "description": "Local Development API Server"
+    },
+    {
+      "url": "https://api.chefni.com/api",
+      "description": "Production API Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter Bearer access token received from /auth/login or /auth/register"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "usr_64a123" },
+          "name": { "type": "string", "example": "Chef Rabia Nasar" },
+          "email": { "type": "string", "example": "rabia@chefni.com" },
+          "role": { "type": "string", "example": "user", "enum": ["user", "admin"] },
+          "subscription_tier": { "type": "string", "example": "creator_trial" },
+          "trial_active": { "type": "boolean", "example": true },
+          "trial_ends_at": { "type": "string", "format": "date-time", "example": "2026-08-18T12:00:00Z" }
+        }
+      },
+      "Reel": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "reel_01" },
+          "title": { "type": "string", "example": "Authentic Mughlai Mutton Karahi" },
+          "chef_name": { "type": "string", "example": "Chef Rabia Nasar" },
+          "duration": { "type": "string", "example": "0:59" },
+          "video_url": { "type": "string", "example": "/storage/reels/reel_01.mp4" },
+          "watermark_applied": { "type": "boolean", "example": true },
+          "is_official": { "type": "boolean", "example": true },
+          "likes_count": { "type": "integer", "example": 1420 }
+        }
+      },
+      "GeoPricing": {
+        "type": "object",
+        "properties": {
+          "country_code": { "type": "string", "example": "PK" },
+          "currency_code": { "type": "string", "example": "PKR" },
+          "creator_monthly": { "type": "number", "example": 1390 },
+          "creator_yearly": { "type": "number", "example": 12500 },
+          "pro_monthly": { "type": "number", "example": 3600 },
+          "pro_yearly": { "type": "number", "example": 33400 }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register New User (Activates 14-Day Free Trial)",
+        "description": "Registers a new user and automatically activates a 14-day free trial of Creator tier without requiring upfront payment info.",
+        "tags": ["Authentication & Trial"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password"],
+                "properties": {
+                  "name": { "type": "string", "example": "Ayesha Khan" },
+                  "email": { "type": "string", "example": "ayesha@example.com" },
+                  "password": { "type": "string", "example": "Secret123!" },
+                  "country_code": { "type": "string", "example": "PK" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration Successful & 14-Day Free Trial Activated"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "User & Admin Login",
+        "tags": ["Authentication & Trial"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "rabia@chefni.com" },
+                  "password": { "type": "string", "example": "Chefni2026!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login Successful with Bearer Token" }
+        }
+      }
+    },
+    "/reels/official": {
+      "get": {
+        "summary": "Get Official Chefni Reels (Public Feed)",
+        "description": "Fetches exclusive official Chefni compressed 1-minute reels. Regular user videos never appear in this feed.",
+        "tags": ["Public Reels & Recipes"],
+        "responses": {
+          "200": { "description": "List of Official Chefni Reels" }
+        }
+      }
+    },
+    "/studio/upload-video": {
+      "post": {
+        "summary": "Upload Video -> Generate 1-Min Watermarked Reel & AI Recipe",
+        "description": "Processes raw video with high precision (1080x1920 portrait, 60s limit, H.264/AAC CRF 23, Chefni watermark overlay) and extracts ingredients/steps privately for the user's dashboard.",
+        "tags": ["User Private Studio"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string", "example": "My Chocolate Sponge Cake" },
+                  "video": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Reel Processed with Watermark & Recipe Extracted" }
+        }
+      }
+    },
+    "/geo/pricing": {
+      "get": {
+        "summary": "Get Country-Specific Pricing Matrix",
+        "tags": ["Geo-Pricing & Availability"],
+        "parameters": [
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "example": "PK" },
+            "description": "Country code (PK, AE, US)"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Dynamic Geo-Pricing Object" }
+        }
+      }
+    },
+    "/admin/telemetry": {
+      "get": {
+        "summary": "Admin Live Server & Revenue Telemetry",
+        "tags": ["Admin Command Center"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Live Metrics, Latency, MRR, & CDN Bandwidth" }
+        }
+      }
+    },
+    "/legal/privacy-policy": {
+      "get": {
+        "summary": "Get Dynamic Privacy Policy",
+        "tags": ["Legal & App Store Compliance"],
+        "responses": {
+          "200": { "description": "GDPR & CCPA Compliant Privacy Policy" }
+        }
+      }
+    },
+    "/user/delete-account": {
+      "post": {
+        "summary": "1-Tap Mandatory Account Deletion & Data Erasure",
+        "tags": ["Legal & App Store Compliance"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Account Erasure Request Confirmed" }
+        }
+      }
+    }
+  }
+}

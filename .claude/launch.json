@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chefni-backend",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["chefni_backend/artisan", "serve", "--host=127.0.0.1", "--port=8000"],
+      "port": 8000
+    },
+    {
+      "name": "chefni-web-admin",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "cd /d chefni_web_admin && npx next dev"],
+      "port": 3000
+    },
+    {
+      "name": "chefni-flutter-web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "serve", "-l", "5000", "chefni_flutter_app/build/web"],
+      "port": 5000
+    }
+  ]
+}

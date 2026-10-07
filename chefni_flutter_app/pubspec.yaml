@@ -1,0 +1,41 @@
+name: chefni_flutter_app
+description: "Chefni AI - Premium Retro-Modern Culinary Studio & Recipe App"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  share_plus: ^13.3.1
+  path_provider: ^2.1.1
+  http: ^1.1.0
+  shared_preferences: ^2.2.2
+  # Picking a cooking video off the device for the Studio upload flow.
+  file_picker: ^13.1.0
+  # Reel playback, paused when a page scrolls out of view.
+  video_player: ^2.8.2
+  visibility_detector: ^0.4.0+2
+  # Recipe card and cookbook PDF export.
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+# path_provider_android 2.3.x pulls in `jni`, which forces a full NDK
+# toolchain download at build time. 2.2.23 is the last release without it
+# and covers everything the upload flow needs.
+dependency_overrides:
+  path_provider_android: 2.2.23
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
